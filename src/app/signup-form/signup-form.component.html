@@ -1,0 +1,79 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+  <label>
+    Name:
+    <input type="text" formControlName="name" />
+    <small
+      *ngIf="
+        signupForm.controls.name.errors?.['required'] &&
+        (signupForm.controls.name.dirty || signupForm.controls.name.touched)
+      "
+      >Name is required</small
+    >
+  </label>
+  <label>
+    Email:
+    <input type="email" formControlName="email" />
+    <small
+      *ngIf="
+        signupForm.controls.email.errors?.['required'] &&
+        (signupForm.controls.email.dirty || signupForm.controls.email.touched)
+      "
+      >Email is required</small
+    >
+    <small
+      *ngIf="
+        signupForm.controls.email.errors?.['email'] &&
+        (signupForm.controls.email.dirty || signupForm.controls.email.touched)
+      "
+      >Valid email is required</small
+    >
+  </label>
+  <label>
+    Password:
+    <input type="password" formControlName="password" />
+    <small
+      *ngIf="
+        signupForm.controls.password.errors?.['required'] &&
+        (signupForm.controls.password.dirty ||
+          signupForm.controls.password.touched)
+      "
+      >Password is required</small
+    >
+    <small
+      *ngIf="
+        signupForm.controls.password.errors?.['minlength'] &&
+        (signupForm.controls.password.dirty ||
+          signupForm.controls.password.touched)
+      "
+      >Password must be at least 8 characters long</small
+    >
+    <small
+      *ngIf="
+        signupForm.controls.password.errors?.['pattern'] &&
+        (signupForm.controls.password.dirty ||
+          signupForm.controls.password.touched)
+      "
+      >Password must have at least one lowercase letter, one uppercase letter,
+      and one number</small
+    >
+  </label>
+  <label>
+    Phone Number:
+    <input type="tel" formControlName="phone" />
+    <small
+      *ngIf="
+        signupForm.controls.phone.errors?.['required'] &&
+        (signupForm.controls.phone.dirty || signupForm.controls.phone.touched)
+      "
+      >Phone number is required</small
+    >
+    <small
+      *ngIf="
+        signupForm.controls.phone.errors?.['pattern'] &&
+        (signupForm.controls.phone.dirty || signupForm.controls.phone.touched)
+      "
+      >Phone number should contain only digits</small
+    >
+  </label>
+  <button type="submit" [disabled]="signupForm.invalid">Submit</button>
+</form>
