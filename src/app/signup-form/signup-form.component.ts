@@ -1,11 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { YupFormControls, FormHandler } from 'src/utilities/form-handler';
+import * as Yup from 'yup';
 
 @Component({
   standalone: true,
@@ -14,26 +11,57 @@ import {
   templateUrl: './signup-form.component.html',
   styleUrls: ['./signup-form.component.css'],
 })
-export class SignupFormComponent implements OnInit {
-  signupForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(8),
-      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$/),
-    ]),
-    phone: new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^\+?\d{1,5}-\d{7,14}$/),
-    ]),
+export class SignupFormComponent {
+  signupForm: FormGroup<YupFormControls<ISignupForm>>;
+
+  initialValues: ISignupForm = {
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+  };
+
+  validationSchema: Yup.ObjectSchema<ISignupForm> = Yup.object().shape({
+    name: Yup.string().required('Name is required').min(2),
+    email: Yup.string().email().required('Email is required'),
+    password: Yup.string()
+      .required('Password is required')
+      .min(8, 'Password must be at least 8 characters long')
+      .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+      .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .matches(
+        /[^a-zA-Z0-9]/,
+        'Password must contain at least one special character'
+      ),
+    phone: Yup.string()
+      .required('Phone is required')
+      .matches(
+        /^\+[1-9]{1,5}\d{7,14}$/,
+        'Please enter a valid international number'
+      ),
   });
 
-  constructor() {}
+  formError = (controlName: string) => {
+    const control = this.signupForm.get(controlName);
+    if (control?.pristine && !control.touched) return;
+    return this.signupForm?.errors?.[controlName];
+  };
 
-  ngOnInit(): void {}
+  constructor() {
+    this.signupForm = FormHandler.controls<ISignupForm>(this.initialValues);
+    this.signupForm.setValidators(
+      FormHandler.validate<ISignupForm>(this.validationSchema)
+    );
+  }
 
   onSubmit() {
-    console.warn(this.signupForm.value);
+    alert('Form submitted successfully!');
   }
+}
+
+interface ISignupForm {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
 }
